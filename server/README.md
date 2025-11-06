@@ -1,6 +1,6 @@
-EduPlanner - Minimal Backend
+ECHOES OF EFFORTS - Minimal Backend
 
-This is a minimal Node.js + SQLite backend for the EduPlanner prototype. It provides:
+This is a minimal Node.js + SQLite backend for the ECHOES OF EFFORTS prototype. It provides:
 
 - User registration and login (JWT)
 - Endpoints to save/read study progress
@@ -22,7 +22,7 @@ npm install
 npm start
 ```
 
-The server will run on http://localhost:4000 by default.
+The server will run on http://localhost:5500 by default.
 
 Notes & security:
 - This is a prototype. The JWT secret is stored in plain text in `server.js` — replace with environment variable in production.

@@ -9,12 +9,10 @@
   --card-hover-bg: linear-gradient(135deg, #333333, #666666);
 }
 
-/* Add smooth scrolling to page */
 html {
   scroll-behavior: smooth;
 }
 
-/* Planner Page Styles */
 .planner-header {
   text-align: center;
   padding: 8rem 2rem 2rem;
@@ -80,7 +78,6 @@ html {
   font-weight: 500;
 }
 
-/* Improved Planner Layout */
 .planner-layout {
   max-width: 1200px;
   margin: 0 auto;
@@ -155,7 +152,6 @@ html {
   box-shadow: var(--shadow);
 }
 
-/* Loading Overlay */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -184,7 +180,6 @@ html {
   100% { transform: rotate(360deg); }
 }
 
-/* Button Variations */
 .ai-button.secondary {
   background: #e2e8f0;
   color: var(--text-color);
@@ -194,7 +189,6 @@ html {
   background: #cbd5e0;
 }
 
-/* Topic Resources */
 #topicResources {
   margin-top: 1rem;
   padding-top: 1rem;

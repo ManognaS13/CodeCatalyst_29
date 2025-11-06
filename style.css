@@ -1,0 +1,65 @@
+/* Cards for Resources Page */
+.card {
+  background-color: grey;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin: 20px auto;
+  width: 80%;
+  max-width: 400px;
+}
+
+/* Table for Planner Page */
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 600px;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #4b7bec;
+  color: white;
+}
+
+tr:hover {
+  background-color: #f1f2f6;
+}
+h1 {
+ text-align: center;
+}
+.hresource {
+    text-align: center;
+    
+}
+
+body{
+  background-color: lightgoldenrodyellow;
+  font-size: 25px;;
+}
+
+.logo{
+  display: block;
+  margin: 0 auto;
+  height:300px;
+  width:300px;
+}
+
+.tree{
+  text-align:center;
+}
+
+.dropdown{
+    padding:20px;
+    font-size: 30px;
+    border-radius: 20px;
+}

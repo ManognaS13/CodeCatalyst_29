@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECHOES OF EFFORTS</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <img src="assets/logo.jpg" alt="Logo" class="nav-logo">
+      <span>ECHOES OF EFFORTS</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+      <a href="planner.html" class="nav-link"><i class="fas fa-calendar-alt"></i> Planner</a>
+    </div>
+    <div class="nav-actions" id="navActions">
+      <button id="loginBtn" class="nav-button" onclick="showAuthModal('login')">Login</button>
+    </div>
+  </nav>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="auth-modal" style="display:none;">
+    <div class="auth-modal-content">
+      <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Login</button>
+        <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Register</button>
+      </div>
+      <div id="authBody">
+        <form id="authForm" onsubmit="return submitAuthForm()">
+          <div id="fieldName" style="display:none;">
+            <label>Name</label>
+            <input type="text" id="authName" placeholder="Your name">
+          </div>
+          <label>Email</label>
+          <input type="email" id="authEmail" placeholder="you@example.com" required>
+          <label>Password</label>
+          <input type="password" id="authPassword" placeholder="Password" required>
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button type="submit" class="ai-button">Submit</button>
+            <button type="button" class="ai-button" onclick="closeAuthModal()" style="background:#ccc;color:#333;">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">ECHOES OF EFFORTS</h1>
+      <p class="hero-subtitle">"PLAN YOUR ECHOES INTO BRILLIANCE"</p>
+      <p class="hero-description">Your Smart Study Companion for Academic Excellence</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="exam-selector">
+      <h2>Choose Your Path to Success</h2>
+      <p>Select your exam to get a personalized study plan and curated resources</p>
+      
+      <div class="exam-grid">
+        <div class="exam-card" onclick="window.location.href='kcet.html'">
+          <i class="fas fa-graduation-cap"></i>
+          <h3>KCET</h3>
+          <p>Karnataka Common Entrance Test</p>
+        </div>
+        <div class="exam-card" onclick="window.location.href='neet.html'">
+          <i class="fas fa-heartbeat"></i>
+          <h3>NEET</h3>
+          <p>National Eligibility cum Entrance Test</p>
+        </div>
+        <div class="exam-card" onclick="window.location.href='jee.html'">
+          <i class="fas fa-cog"></i>
+          <h3>JEE</h3>
+          <p>Joint Entrance Examination</p>
+        </div>
+        <div class="exam-card" onclick="window.location.href='pu.html'">
+          <i class="fas fa-book-open"></i>
+          <h3>PUC</h3>
+          <p>Pre-University Course</p>
+        </div>
+        <div class="exam-card" onclick="window.location.href='10th.html'">
+          <i class="fas fa-school"></i>
+          <h3>10th Board</h3>
+          <p>SSLC Examination</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard" style="display:none;">
+      <h2>Your Learning Dashboard</h2>
+      <div class="dashboard-grid">
+        <div class="dashboard-card progress-card">
+          <h3>Study Progress</h3>
+          <div id="progressList" class="progress-list"></div>
+        </div>
+        <div class="dashboard-card test-card">
+          <h3>Weekly Test</h3>
+          <div class="test-controls">
+            <select id="testExamSelect" class="test-select">
+              <option value="KCET">KCET</option>
+              <option value="NEET">NEET</option>
+              <option value="JEE">JEE</option>
+              <option value="PUC">PUC</option>
+              <option value="10th">10th Board</option>
+            </select>
+            <button onclick="loadWeeklyTest()" class="ai-button">Load Test</button>
+          </div>
+          <div id="testContainer" class="test-container"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>Why Choose ECHOES OF EFFORTS?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="fas fa-clock"></i>
+          <h3>Smart Time Management</h3>
+          <p>Optimize your study schedule for maximum efficiency</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-chart-line"></i>
+          <h3>Progress Tracking</h3>
+          <p>Monitor your preparation with detailed analytics</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-users"></i>
+          <h3>Personalized Approach</h3>
+          <p>Study plans tailored to your specific needs</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dashboard / User area (hidden until login) -->
+  <section id="dashboard" class="dashboard" style="display:none; padding:2rem 5%;">
+    <div class="dashboard-inner">
+      <h2>Your Progress</h2>
+      <div id="progressList">No data yet.</div>
+
+      <h3 style="margin-top:1.5rem;">Weekly Test</h3>
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+        <select id="testExamSelect" class="ai-select">
+          <option value="KCET">KCET</option>
+          <option value="NEET">NEET</option>
+          <option value="JEE">JEE</option>
+          <option value="PUC">PUC</option>
+          <option value="10th">10th</option>
+        </select>
+        <button onclick="loadWeeklyTest()" class="ai-button">Load Test</button>
+      </div>
+      <div id="testContainer"></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="planner.html">Planner</a>
+      </div>
+      <div class="footer-section">
+        <h4>Connect With Us</h4>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-section">
+        <h4>Contact</h4>
+        <p><i class="fas fa-envelope"></i> support@ECHOES OF EFFORTS.com</p>
+        <p><i class="fas fa-phone"></i> +91 1234567890</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 ECHOES OF EFFORTS. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- AI Study Assistant -->
+  <div class="ai-toggle" id="aiToggle">
+    <i class="fas fa-brain"></i>
+  </div>
+
+  <div class="ai-assistant" id="aiAssistant">
+    <div class="ai-assistant-header">
+      <h3><i class="fas fa-brain"></i> Study Planner AI</h3>
+      <button onclick="toggleAI()" style="background: none; border: none; color: white; cursor: pointer;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="ai-chat" id="aiChat">
+      <div class="ai-message ai">
+        Welcome to Study Planner AI! Choose an option:
+        1. Generate Study Plan
+        2. Get Resource Rankings
+      </div>
+    </div>
+    <div class="ai-options" id="aiOptions">
+      <select id="examType" class="ai-select">
+        <option value="">Select Exam</option>
+        <option value="KCET">KCET</option>
+        <option value="NEET">NEET</option>
+        <option value="JEE">JEE</option>
+        <option value="PUC">PUC</option>
+        <option value="10th">10th Board</option>
+      </select>
+      <select id="duration" class="ai-select">
+        <option value="">Study Duration</option>
+        <option value="1">1 month</option>
+        <option value="3">3 months</option>
+        <option value="6">6 months</option>
+        <option value="12">1 year</option>
+      </select>
+      <div class="ai-buttons">
+        <button onclick="generatePlan()" class="ai-button"><i class="fas fa-calendar"></i> Generate Plan</button>
+        <button onclick="rankResources()" class="ai-button"><i class="fas fa-star"></i> Rank Resources</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const API = 'http://localhost:4000';
+
+    // Smooth scrolling for anchors
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Add active class to current nav link
+    const currentLocation = location.href;
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => { if(link.href === currentLocation) link.classList.add('active'); });
+
+    // --- AI assistant functions (existing) ---
+    function toggleAI() { document.getElementById('aiAssistant').classList.toggle('active'); }
+    document.getElementById('aiToggle').addEventListener('click', toggleAI);
+    function addMessage(text, type) {
+      const chat = document.getElementById('aiChat');
+      const message = document.createElement('div');
+      message.className = `ai-message ${type}`;
+      message.textContent = text;
+      chat.appendChild(message);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function generatePlan() {
+      const examType = document.getElementById('examType').value;
+      const duration = document.getElementById('duration').value;
+      if (!examType || !duration) { addMessage('Please select both exam type and duration.', 'ai'); return; }
+      const plan = generateStudyPlan(examType, duration);
+      addMessage(`Generated ${duration}-month study plan for ${examType}:`, 'ai');
+      addMessage(plan, 'ai');
+    }
+
+    function generateStudyPlan(examType, duration) {
+      // Copy of existing local plan logic (keeps resources unchanged)
+      const plans = {
+        'KCET': { 'core': ['Physics','Chemistry','Mathematics'], 'weight': {'Physics':0.35,'Chemistry':0.35,'Mathematics':0.3} },
+        'NEET': { 'core': ['Biology','Physics','Chemistry'], 'weight': {'Biology':0.4,'Physics':0.3,'Chemistry':0.3} },
+        'JEE': { 'core': ['Mathematics','Physics','Chemistry'], 'weight': {'Mathematics':0.4,'Physics':0.3,'Chemistry':0.3} },
+        'PUC': { 'core': ['Physics','Chemistry','Mathematics','Biology'], 'weight': {'Physics':0.25,'Chemistry':0.25,'Mathematics':0.25,'Biology':0.25} },
+        '10th': { 'core': ['Mathematics','Science','Social Science','Languages'], 'weight': {'Mathematics':0.3,'Science':0.3,'Social Science':0.2,'Languages':0.2} }
+      };
+      const examPlan = plans[examType];
+      const hoursPerDay = 6, daysPerMonth = 30, totalHours = hoursPerDay*daysPerMonth*parseInt(duration);
+      let plan = '';
+      examPlan.core.forEach(subject => { const hours = Math.round(totalHours * examPlan.weight[subject]); const hoursPerMonth = Math.round(hours/parseInt(duration)); plan += `\n${subject}: ${hoursPerMonth} hours/month`; });
+      return plan;
+    }
+
+    function rankResources() {
+      const examType = document.getElementById('examType').value;
+      if (!examType) { addMessage('Please select an exam type.', 'ai'); return; }
+      const rankings = getResourceRankings(examType);
+      addMessage(`Top recommended resources for ${examType}:`, 'ai');
+      addMessage(rankings, 'ai');
+    }
+
+    function getResourceRankings(examType) {
+      // local static ranking (backend can be added later to store curated resources)
+      const resources = {
+        'KCET': ['Official KCET Previous Papers','Karnataka TextBooks','KEA Study Material','Online Practice Tests'],
+        'NEET': ['NCERT Textbooks','Previous Year Questions','Online Mock Tests','Video Lectures'],
+        'JEE': ['NCERT + Reference Books','Previous Year Papers','Online Test Series','Concept Videos'],
+        'PUC': ['State Board Textbooks','PU Board Question Bank','Sample Papers','Online Resources'],
+        '10th': ['SSLC Textbooks','Model Question Papers','Study Notes','Practice Worksheets']
+      };
+      return resources[examType].join('\n');
+    }
+
+    // --- Authentication & backend integration (modal-based) ---
+    function showAuthModal(mode = 'login') {
+      const modal = document.getElementById('authModal');
+      modal.style.display = 'flex';
+      showAuthTab(mode);
+    }
+    function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
+    function showAuthTab(tab) {
+      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+      document.getElementById('fieldName').style.display = tab === 'register' ? 'block' : 'none';
+      document.getElementById('authForm').dataset.mode = tab;
+    }
+
+    // Called when modal form is submitted
+    async function submitAuthForm() {
+      const mode = document.getElementById('authForm').dataset.mode || 'login';
+      const name = document.getElementById('authName').value.trim();
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      if (!email || !password) { alert('Email and password required'); return false; }
+      if (mode === 'login') await loginUser(email, password);
+      else await registerUser(name, email, password);
+      return false; // prevent form submit
+    }
+
+    async function registerUser(name, email, password) {
+      try {
+        const res = await fetch(API + '/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, email, password }) });
+        const j = await res.json();
+        if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Registered & logged in'); fetchAndShowProgress(); } else alert(j.error || JSON.stringify(j));
+      } catch (e) { alert('Network error'); }
+    }
+
+    async function loginUser(email, password) {
+      try {
+        const res = await fetch(API + '/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+        const j = await res.json();
+        if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Logged in'); fetchAndShowProgress(); } else alert(j.error || JSON.stringify(j));
+      } catch (e) { alert('Network error'); }
+    }
+
+    function saveToken(token) { localStorage.setItem('edu_token', token); renderAuthState(); }
+    function logout() { localStorage.removeItem('edu_token'); renderAuthState(); document.getElementById('dashboard').style.display = 'none'; }
+    function isAuthed() { return !!localStorage.getItem('edu_token'); }
+    function authHeader() { const t = localStorage.getItem('edu_token'); return t ? { 'Authorization': 'Bearer ' + t } : {}; }
+
+    function renderAuthState() {
+      const nav = document.getElementById('navActions');
+      if (!nav) return;
+      nav.innerHTML = '';
+      if (isAuthed()) {
+        const out = document.createElement('div');
+        out.style.display = 'flex';
+        out.style.gap = '8px';
+        const btn = document.createElement('button'); btn.textContent = 'Dashboard'; btn.className='nav-button'; btn.onclick = () => { document.getElementById('dashboard').style.display = 'block'; fetchAndShowProgress(); };
+        const lbtn = document.createElement('button'); lbtn.textContent='Logout'; lbtn.className='nav-button'; lbtn.onclick = logout;
+        out.appendChild(btn); out.appendChild(lbtn); nav.appendChild(out);
+      } else {
+        const b = document.createElement('button'); b.textContent = 'Login / Sign up'; b.className='nav-button'; b.onclick = () => showAuthModal('login'); nav.appendChild(b);
+      }
+    }
+
+    async function fetchAndShowProgress() {
+      if (!isAuthed()) return;
+      try {
+        const res = await fetch(API + '/api/progress', { headers: Object.assign({'Content-Type':'application/json'}, authHeader()) });
+        const j = await res.json();
+        if (!res.ok) { console.error(j); return; }
+        const list = document.getElementById('progressList'); list.innerHTML='';
+        if (!j.progress || j.progress.length===0) list.textContent = 'No progress recorded yet.';
+        else {
+          j.progress.forEach(p => {
+            const div = document.createElement('div');
+            div.textContent = `${p.exam}: ${p.percentage}% (${p.completed}/${p.total} units)`;
+            list.appendChild(div);
+          });
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    // Weekly test: load and submit
+    async function loadWeeklyTest() {
+      if (!isAuthed()) { alert('Please login first'); return; }
+      const exam = document.getElementById('testExamSelect').value;
+      try {
+        const res = await fetch(API + '/api/tests/weekly?exam=' + encodeURIComponent(exam), { headers: authHeader() });
+        const j = await res.json();
+        if (!j.test) { document.getElementById('testContainer').innerHTML = '<em>No test available yet for this exam.</em>'; return; }
+        renderTest(j.test);
+      } catch (e) { console.error(e); }
+    }
+
+    function renderTest(test) {
+      const c = document.getElementById('testContainer'); c.innerHTML = '';
+      const title = document.createElement('h4'); title.textContent = `Week ${test.week} Test (${test.exam})`; c.appendChild(title);
+      const form = document.createElement('div'); form.id = 'testForm';
+      test.questions.forEach((q, idx) => {
+        const qDiv = document.createElement('div'); qDiv.style.marginBottom='12px';
+        const qText = document.createElement('div'); qText.textContent = (idx+1) + '. ' + q.q; qDiv.appendChild(qText);
+        q.options.forEach((opt, i) => {
+          const label = document.createElement('label'); label.style.display='block';
+          const input = document.createElement('input'); input.type='radio'; input.name='q'+idx; input.value=i; label.appendChild(input); label.append(' ' + opt);
+          qDiv.appendChild(label);
+        });
+        form.appendChild(qDiv);
+      });
+      const submit = document.createElement('button'); submit.textContent='Submit Test'; submit.className='ai-button'; submit.onclick = () => submitTest(test.id, test.questions.length);
+      c.appendChild(form); c.appendChild(submit);
+    }
+
+    async function submitTest(test_id, qcount) {
+      const answers = [];
+      for (let i=0;i<qcount;i++) {
+        const sel = document.querySelector(`input[name=q${i}]:checked`);
+        answers.push(sel ? parseInt(sel.value) : -1);
+      }
+      try {
+        const res = await fetch(API + '/api/tests/submit', { method:'POST', headers: Object.assign({'Content-Type':'application/json'}, authHeader()), body: JSON.stringify({ test_id, answers }) });
+        const j = await res.json();
+        if (res.ok) { alert('Score: ' + j.score + '%'); fetchAndShowProgress(); } else alert(j.error || JSON.stringify(j));
+      } catch (e) { console.error(e); }
+    }
+
+    // Initialize auth state when page loads
+    renderAuthState();
+    if (isAuthed()) { document.getElementById('dashboard').style.display='block'; fetchAndShowProgress(); }
+  </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduPlanner - Study Plan</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-brand">
+      <img src="assets/logo.jpg" alt="Logo" class="nav-logo">
+      <span>EduPlanner</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+      <a href="planner.html" class="nav-link active"><i class="fas fa-calendar-alt"></i> Planner</a>
+    </div>
+    <div class="nav-actions" id="navActions">
+      <button id="loginBtn" class="nav-button" onclick="showAuthModal('login')">Login</button>
+    </div>
+  </nav>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="auth-modal" style="display:none;">
+    <div class="auth-modal-content">
+      <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Login</button>
+        <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Register</button>
+      </div>
+      <div id="authBody">
+        <form id="authForm" onsubmit="return submitAuthForm()">
+          <div id="fieldName" style="display:none;">
+            <label>Name</label>
+            <input type="text" id="authName" placeholder="Your name">
+          </div>
+          <label>Email</label>
+          <input type="email" id="authEmail" placeholder="you@example.com" required>
+          <label>Password</label>
+          <input type="password" id="authPassword" placeholder="Password" required>
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button type="submit" class="ai-button">Submit</button>
+            <button type="button" class="ai-button" onclick="closeAuthModal()" style="background:#ccc;color:#333;">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="planner-header">
+    <h1>5-Day Study Planner</h1>
+    <p>Organize your preparation with a simple plan</p>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <section class="intro">
+      <table>
+        <tr>
+          <th>Day</th>
+          <th>Subjects & Topics</th>
+        </tr>
+        <tr>
+          <td>Day 1</td>
+          <td>Physics – Motion and Laws</td>
+        </tr>
+        <tr>
+          <td>Day 2</td>
+          <td>Chemistry – Atomic Structure</td>
+        </tr>
+        <tr>
+          <td>Day 3</td>
+          <td>Math – Trigonometry & Algebra</td>
+        </tr>
+        <tr>
+          <td>Day 4</td>
+          <td>Biology – Human Anatomy</td>
+        </tr>
+        <tr>
+          <td>Day 5</td>
+          <td>Revision + Practice Tests</td>
+        </tr>
+      </table>
+
+    </section>
+
+    <section class="planner-controls">
+      <div class="exam-select">
+        <label for="examSelect">Select Your Exam:</label>
+        <select id="examSelect" onchange="loadPlannerContent()">
+          <option value="KCET">KCET</option>
+          <option value="NEET">NEET</option>
+          <option value="JEE">JEE</option>
+          <option value="PUC">PUC</option>
+          <option value="10th">10th Board</option>
+        </select>
+      </div>
+      <div class="timer-controls">
+        <span id="timerDisplay">00:00:00</span>
+        <button onclick="toggleTimer()" class="ai-button" id="timerBtn">Start Timer</button>
+      </div>
+    </section>
+
+    <div class="planner-layout">
+      <div id="progressContainer" class="progress-container" style="display:none;">
+        <h3>Your Progress</h3>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <p id="progressText">0% Complete</p>
+      </div>
+
+      <div id="topicDetails" class="topic-details">
+        <h3>Current Topic Details</h3>
+        <div id="topicContent">
+          <div id="currentTopic"></div>
+          <div id="topicResources"></div>
+          <div class="topic-actions">
+            <button onclick="markTopicComplete()" class="ai-button" id="markCompleteBtn" style="display:none;">
+              Mark Complete
+            </button>
+            <button onclick="takeNotes()" class="ai-button secondary" id="notesBtn" style="display:none;">
+              Take Notes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="notesPanel" class="notes-panel" style="display:none;">
+        <h3>Study Notes</h3>
+        <textarea id="notesArea" placeholder="Take notes for your current topic..."></textarea>
+        <div class="notes-actions">
+          <button onclick="saveNotes()" class="ai-button">Save Notes</button>
+          <button onclick="closeNotes()" class="ai-button secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+      <div class="loader"></div>
+      <p>Loading...</p>
+    </div>
+    </main>
+
+    <script>
+      const API = 'http://localhost:3000';
+      let currentExam = '';
+      let currentTopic = '';
+
+      function showAuthModal(mode) {
+        document.getElementById('authModal').style.display = 'flex';
+        document.getElementById('fieldName').style.display = mode === 'register' ? 'block' : 'none';
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+      }
+
+      function closeAuthModal() {
+        document.getElementById('authModal').style.display = 'none';
+      }
+
+      function showAuthTab(mode) {
+        showAuthModal(mode);
+      }
+
+      async function submitAuthForm() {
+        const mode = document.getElementById('fieldName').style.display === 'none' ? 'login' : 'register';
+        const name = document.getElementById('authName').value.trim();
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        if (!email || !password) { alert('Email and password required'); return false; }
+        if (mode === 'login') await loginUser(email, password);
+        else await registerUser(name, email, password);
+        return false;
+      }
+
+      async function registerUser(name, email, password) {
+        try {
+          const res = await fetch(API + '/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, email, password }) });
+          const j = await res.json();
+          if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Registered & logged in'); loadPlannerContent(); } else alert(j.error || JSON.stringify(j));
+        } catch (e) { alert('Network error'); }
+      }
+
+      async function loginUser(email, password) {
+        try {
+          const res = await fetch(API + '/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+          const j = await res.json();
+          if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Logged in'); loadPlannerContent(); } else alert(j.error || JSON.stringify(j));
+        } catch (e) { alert('Network error'); }
+      }
+
+      function saveToken(token) { localStorage.setItem('edu_token', token); renderAuthState(); }
+      function logout() { localStorage.removeItem('edu_token'); renderAuthState(); hideLoggedInContent(); }
+      function isAuthed() { return !!localStorage.getItem('edu_token'); }
+      function authHeader() { const t = localStorage.getItem('edu_token'); return t ? { 'Authorization': 'Bearer ' + t } : {}; }
+
+      function renderAuthState() {
+        const nav = document.getElementById('navActions');
+        if (!nav) return;
+        nav.innerHTML = '';
+        if (isAuthed()) {
+          const out = document.createElement('div');
+          out.style.display = 'flex';
+          out.style.gap = '8px';
+          const lbtn = document.createElement('button'); lbtn.textContent='Logout'; lbtn.className='nav-button'; lbtn.onclick = logout;
+          out.appendChild(lbtn); nav.appendChild(out);
+          document.getElementById('markCompleteBtn').style.display = 'block';
+          document.getElementById('progressContainer').style.display = 'block';
+        } else {
+          const b = document.createElement('button'); b.textContent = 'Login / Sign up'; b.className='nav-button'; b.onclick = () => showAuthModal('login'); nav.appendChild(b);
+          hideLoggedInContent();
+        }
+      }
+
+      function hideLoggedInContent() {
+        document.getElementById('markCompleteBtn').style.display = 'none';
+        document.getElementById('progressContainer').style.display = 'none';
+      }
+
+      async function loadPlannerContent() {
+        if (!isAuthed()) { alert('Please login first'); return; }
+        currentExam = document.getElementById('examSelect').value;
+        try {
+          const res = await fetch(API + '/api/progress?exam=' + encodeURIComponent(currentExam), { headers: authHeader() });
+          const data = await res.json();
+          if (res.ok) {
+            updateProgress(data.progress[0] || { percentage: 0, completed: 0, total: 5 });
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      async function markTopicComplete() {
+        if (!isAuthed() || !currentExam) return;
+        try {
+          const res = await fetch(API + '/api/progress/update', {
+            method: 'POST',
+            headers: Object.assign({'Content-Type': 'application/json'}, authHeader()),
+            body: JSON.stringify({ exam: currentExam })
+          });
+          if (res.ok) {
+            loadPlannerContent();
+            alert('Progress updated!');
+          }
+        } catch (e) { console.error(e); }
+      }
+
+      function updateProgress(progress) {
+        const fill = document.getElementById('progressFill');
+        const text = document.getElementById('progressText');
+        fill.style.width = progress.percentage + '%';
+        text.textContent = `${progress.percentage}% Complete (${progress.completed}/${progress.total} topics)`;
+      }
+
+      // Study Timer
+      let timerInterval = null;
+      let startTime = 0;
+      let isTimerRunning = false;
+
+      function toggleTimer() {
+        if (isTimerRunning) {
+          clearInterval(timerInterval);
+          document.getElementById('timerBtn').textContent = 'Start Timer';
+          saveStudyTime();
+        } else {
+          startTime = Date.now() - (parseInt(localStorage.getItem('studyTime_' + currentExam) || '0') * 1000);
+          timerInterval = setInterval(updateTimer, 1000);
+          document.getElementById('timerBtn').textContent = 'Stop Timer';
+        }
+        isTimerRunning = !isTimerRunning;
+      }
+
+      function updateTimer() {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const hours = Math.floor(elapsed / 3600);
+        const minutes = Math.floor((elapsed % 3600) / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timerDisplay').textContent = 
+          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
+
+      function saveStudyTime() {
+        if (!currentExam) return;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        localStorage.setItem('studyTime_' + currentExam, elapsed.toString());
+        
+        // Update backend with study time
+        if (isAuthed()) {
+          fetch(API + '/api/progress/study-time', {
+            method: 'POST',
+            headers: Object.assign({'Content-Type': 'application/json'}, authHeader()),
+            body: JSON.stringify({ exam: currentExam, seconds: elapsed })
+          }).catch(console.error);
+        }
+      }
+
+      // Notes Management
+      function takeNotes() {
+        document.getElementById('notesPanel').style.display = 'block';
+        const savedNotes = localStorage.getItem('notes_' + currentExam + '_' + currentTopic);
+        if (savedNotes) document.getElementById('notesArea').value = savedNotes;
+      }
+
+      function saveNotes() {
+        const notes = document.getElementById('notesArea').value;
+        localStorage.setItem('notes_' + currentExam + '_' + currentTopic, notes);
+        alert('Notes saved successfully!');
+      }
+
+      function closeNotes() {
+        document.getElementById('notesPanel').style.display = 'none';
+      }
+
+      // Loading State Management
+      function showLoading() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+      }
+
+      function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+      }
+
+      // Enhanced Content Loading
+      async function loadPlannerContent() {
+        if (!isAuthed()) { alert('Please login first'); return; }
+        currentExam = document.getElementById('examSelect').value;
+        
+        showLoading();
+        try {
+          const res = await fetch(API + '/api/progress?exam=' + encodeURIComponent(currentExam), { headers: authHeader() });
+          const data = await res.json();
+          if (res.ok) {
+            updateProgress(data.progress[0] || { percentage: 0, completed: 0, total: 5 });
+            await loadTopicDetails(data.progress[0]?.completed || 0);
+            // Load saved study time
+            const savedTime = localStorage.getItem('studyTime_' + currentExam) || '0';
+            startTime = Date.now() - (parseInt(savedTime) * 1000);
+            updateTimer();
+          }
+        } catch (e) {
+          console.error(e);
+          alert('Failed to load content. Please try again.');
+        } finally {
+          hideLoading();
+        }
+      }
+
+      async function loadTopicDetails(completedTopics) {
+        const topics = {
+          'KCET': ['Physics – Motion and Laws', 'Chemistry – Atomic Structure', 'Math – Trigonometry', 'Biology – Basics', 'Final Revision'],
+          'NEET': ['Biology – Human Anatomy', 'Physics – Mechanics', 'Chemistry – Organic', 'Biology – Genetics', 'Final Practice'],
+          'JEE': ['Math – Calculus', 'Physics – Dynamics', 'Chemistry – Physical', 'Math – Vectors', 'Mock Tests'],
+          'PUC': ['Languages', 'Science Core', 'Mathematics', 'Electives', 'Revision'],
+          '10th': ['First Language', 'Science', 'Mathematics', 'Social Science', 'Final Prep']
+        };
+
+        currentTopic = topics[currentExam][completedTopics];
+        document.getElementById('currentTopic').innerHTML = `
+          <h4>${currentTopic}</h4>
+          <p>Day ${completedTopics + 1} of your study plan</p>
+        `;
+
+        // Show topic resources
+        const resourcesHtml = await getTopicResources(currentExam, currentTopic);
+        document.getElementById('topicResources').innerHTML = resourcesHtml;
+
+        // Show action buttons
+        document.getElementById('markCompleteBtn').style.display = 'block';
+        document.getElementById('notesBtn').style.display = 'block';
+      }
+
+      async function getTopicResources(exam, topic) {
+        // This would typically fetch from the backend, but for now we'll use sample data
+        const resources = [
+          { title: 'Video Lecture', icon: 'fas fa-video', url: '#' },
+          { title: 'Practice Questions', icon: 'fas fa-tasks', url: '#' },
+          { title: 'Study Notes', icon: 'fas fa-book', url: '#' }
+        ];
+
+        return resources.map(r => `
+          <a href="${r.url}" class="resource-link" target="_blank">
+            <i class="${r.icon}"></i>
+            <span>${r.title}</span>
+          </a>
+        `).join('');
+      }
+
+      // Error Handling Enhancement
+      window.addEventListener('unhandledrejection', function(event) {
+        hideLoading();
+        alert('An error occurred. Please check your connection and try again.');
+      });
+
+      // Initialize on page load
+      renderAuthState();
+      if (isAuthed()) loadPlannerContent();
+    </script>
+</body>
+</html>

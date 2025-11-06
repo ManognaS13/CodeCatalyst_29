@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPlanner Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <img src="assets/logo.jpg" alt="Logo" class="nav-logo">
+            <span>EduPlanner Admin</span>
+        </div>
+    </nav>
+
+    <main class="admin-panel">
+        <h1>Resource Management</h1>
+        
+        <div class="admin-section">
+            <h2>Add/Edit Resources</h2>
+            <select id="adminExamType" class="admin-select">
+                <option value="KCET">KCET</option>
+                <option value="NEET">NEET</option>
+                <option value="JEE">JEE</option>
+                <option value="PUC">PUC</option>
+                <option value="10th">10th Board</option>
+            </select>
+
+            <div class="resource-form">
+                <h3>Add YouTube Lesson</h3>
+                <input type="text" id="videoTitle" placeholder="Video Title">
+                <input type="text" id="videoUrl" placeholder="YouTube URL">
+                <select id="videoSubject" class="admin-select">
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Biology">Biology</option>
+                </select>
+                <button onclick="addResource('video')" class="admin-button">Add Video</button>
+            </div>
+
+            <div class="resource-form">
+                <h3>Add Study Notes</h3>
+                <input type="text" id="notesTitle" placeholder="Notes Title">
+                <input type="file" id="notesFile" accept=".pdf,.doc,.docx">
+                <select id="notesSubject" class="admin-select">
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Biology">Biology</option>
+                </select>
+                <button onclick="addResource('notes')" class="admin-button">Add Notes</button>
+            </div>
+
+            <div class="resource-form">
+                <h3>Add Past Paper</h3>
+                <input type="text" id="paperYear" placeholder="Year">
+                <input type="file" id="paperFile" accept=".pdf">
+                <input type="file" id="solutionFile" accept=".pdf" placeholder="Solutions">
+                <button onclick="addResource('paper')" class="admin-button">Add Paper</button>
+            </div>
+
+            <div class="resource-form">
+                <h3>Subject Weightages</h3>
+                <div id="weightageInputs" class="weightage-inputs">
+                    <!-- Dynamically populated based on exam type -->
+                </div>
+                <button onclick="updateWeightages()" class="admin-button">Update Weightages</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Load and save resources to localStorage for demo purposes
+        // In a real application, this would connect to a backend server
+        const resourceDB = JSON.parse(localStorage.getItem('resourceDB')) || {
+            KCET: { videos: [], notes: [], papers: [], weightages: {} },
+            NEET: { videos: [], notes: [], papers: [], weightages: {} },
+            JEE: { videos: [], notes: [], papers: [], weightages: {} },
+            PUC: { videos: [], notes: [], papers: [], weightages: {} },
+            '10th': { videos: [], notes: [], papers: [], weightages: {} }
+        };
+
+        function addResource(type) {
+            const examType = document.getElementById('adminExamType').value;
+            
+            switch(type) {
+                case 'video':
+                    const video = {
+                        title: document.getElementById('videoTitle').value,
+                        url: document.getElementById('videoUrl').value,
+                        subject: document.getElementById('videoSubject').value
+                    };
+                    resourceDB[examType].videos.push(video);
+                    break;
+                case 'notes':
+                    const notes = {
+                        title: document.getElementById('notesTitle').value,
+                        filename: document.getElementById('notesFile').files[0]?.name,
+                        subject: document.getElementById('notesSubject').value
+                    };
+                    resourceDB[examType].notes.push(notes);
+                    break;
+                case 'paper':
+                    const paper = {
+                        year: document.getElementById('paperYear').value,
+                        paper: document.getElementById('paperFile').files[0]?.name,
+                        solution: document.getElementById('solutionFile').files[0]?.name
+                    };
+                    resourceDB[examType].papers.push(paper);
+                    break;
+            }
+            
+            saveResources();
+            alert('Resource added successfully!');
+        }
+
+        function updateWeightages() {
+            const examType = document.getElementById('adminExamType').value;
+            const inputs = document.querySelectorAll('.weightage-input');
+            const weightages = {};
+            
+            inputs.forEach(input => {
+                weightages[input.dataset.subject] = parseFloat(input.value) / 100;
+            });
+            
+            resourceDB[examType].weightages = weightages;
+            saveResources();
+            alert('Weightages updated successfully!');
+        }
+
+        function saveResources() {
+            localStorage.setItem('resourceDB', JSON.stringify(resourceDB));
+        }
+
+        // Initialize weightage inputs based on exam type
+        document.getElementById('adminExamType').addEventListener('change', function() {
+            const examType = this.value;
+            const subjects = {
+                'KCET': ['Physics', 'Chemistry', 'Mathematics'],
+                'NEET': ['Biology', 'Physics', 'Chemistry'],
+                'JEE': ['Mathematics', 'Physics', 'Chemistry'],
+                'PUC': ['Physics', 'Chemistry', 'Mathematics', 'Biology'],
+                '10th': ['Mathematics', 'Science', 'Social Science', 'Languages']
+            };
+
+            const container = document.getElementById('weightageInputs');
+            container.innerHTML = '';
+            
+            subjects[examType].forEach(subject => {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>${subject}:</label>
+                    <input type="number" class="weightage-input" data-subject="${subject}" 
+                           value="${(resourceDB[examType].weightages[subject] || 0) * 100}"
+                           min="0" max="100">%
+                `;
+                container.appendChild(div);
+            });
+        });
+
+        // Initial load
+        document.getElementById('adminExamType').dispatchEvent(new Event('change'));
+    </script>
+
+    <style>
+        .admin-panel {
+            padding: 2rem 5%;
+            margin-top: 60px;
+        }
+
+        .admin-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .resource-form {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 10px;
+        }
+
+        .admin-select,
+        .admin-button,
+        input[type="text"],
+        input[type="file"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .admin-button {
+            background: var(--card-hover-bg);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .admin-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .weightage-inputs {
+            display: grid;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .weightage-inputs div {
+            display: grid;
+            grid-template-columns: 1fr 100px 20px;
+            align-items: center;
+            gap: 1rem;
+        }
+    </style>
+</body>
+</html>

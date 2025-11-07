@@ -20,7 +20,6 @@
       <a href="planner.html" class="nav-link"><i class="fas fa-calendar-alt" aria-current="true"></i> Planner</a>
     </div>
     <div class="nav-actions" id="navActions">
-      <button id="generateReportBtn" class="nav-button" onclick="generateReport()">Generate Report <i class="fas fa-file-alt"></i></button>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
         <i class="fas fa-moon" id="themeIcon"></i>
       </button>
@@ -80,20 +79,7 @@
           <h3>Study Progress</h3>
           <div id="progressList" class="progress-list"></div>
         </div>
-        <div class="dashboard-card test-card">
-          <h3>Weekly Test</h3>
-          <div class="test-controls">
-            <select id="testExamSelect" class="test-select">
-              <option value="KCET">KCET</option>
-              <option value="NEET">NEET</option>
-              <option value="JEE">JEE</option>
-              <option value="PUC">PUC</option>
-              <option value="10th">10th Board</option>
-            </select>
-            <button onclick="loadWeeklyTest()" class="ai-button">Load Test</button>
-          </div>
-          <div id="testContainer" class="test-container"></div>
-        </div>
+        <!-- Weekly Test removed from Home dashboard -->
       </div>
     </section>
 
@@ -124,18 +110,7 @@
       <h2>Your Progress</h2>
       <div id="progressList">No data yet.</div>
 
-      <h3 style="margin-top:1.5rem;">Weekly Test</h3>
-      <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-        <select id="testExamSelect" class="ai-select">
-          <option value="KCET">KCET</option>
-          <option value="NEET">NEET</option>
-          <option value="JEE">JEE</option>
-          <option value="PUC">PUC</option>
-          <option value="10th">10th</option>
-        </select>
-        <button onclick="loadWeeklyTest()" class="ai-button">Load Test</button>
-      </div>
-      <div id="testContainer"></div>
+      <!-- Weekly Test removed from Home dashboard -->
     </div>
   </section>
 
@@ -316,53 +291,7 @@
       }
     }
 
-    // Weekly test: load and submit
-    async function loadWeeklyTest() {
-      const exam = document.getElementById('testExamSelect').value;
-      try {
-        const res = await fetch(API + '/api/tests/weekly?exam=' + encodeURIComponent(exam));
-        const j = await res.json();
-        if (!j.test) { 
-          document.getElementById('testContainer').innerHTML = '<em>No test available yet for this exam.</em>'; 
-          return; 
-        }
-        renderTest(j.test);
-      } catch (e) { 
-        console.error('Error loading test:', e);
-        document.getElementById('testContainer').innerHTML = '<em>Error loading test. Please try again later.</em>';
-      }
-    }
-
-    function renderTest(test) {
-      const c = document.getElementById('testContainer'); c.innerHTML = '';
-      const title = document.createElement('h4'); title.textContent = `Week ${test.week} Test (${test.exam})`; c.appendChild(title);
-      const form = document.createElement('div'); form.id = 'testForm';
-      test.questions.forEach((q, idx) => {
-        const qDiv = document.createElement('div'); qDiv.style.marginBottom='12px';
-        const qText = document.createElement('div'); qText.textContent = (idx+1) + '. ' + q.q; qDiv.appendChild(qText);
-        q.options.forEach((opt, i) => {
-          const label = document.createElement('label'); label.style.display='block';
-          const input = document.createElement('input'); input.type='radio'; input.name='q'+idx; input.value=i; label.appendChild(input); label.append(' ' + opt);
-          qDiv.appendChild(label);
-        });
-        form.appendChild(qDiv);
-      });
-      const submit = document.createElement('button'); submit.textContent='Submit Test'; submit.className='ai-button'; submit.onclick = () => submitTest(test.id, test.questions.length);
-      c.appendChild(form); c.appendChild(submit);
-    }
-
-    async function submitTest(test_id, qcount) {
-      const answers = [];
-      for (let i=0;i<qcount;i++) {
-        const sel = document.querySelector(`input[name=q${i}]:checked`);
-        answers.push(sel ? parseInt(sel.value) : -1);
-      }
-      try {
-        const res = await fetch(API + '/api/tests/submit', { method:'POST', headers: Object.assign({'Content-Type':'application/json'}, authHeader()), body: JSON.stringify({ test_id, answers }) });
-        const j = await res.json();
-        if (res.ok) { alert('Score: ' + j.score + '%'); fetchAndShowProgress(); } else alert(j.error || JSON.stringify(j));
-      } catch (e) { console.error(e); }
-    }
+    // Weekly test feature removed from Home page (UI and JS cleaned up)
 
     // Dark Mode Toggle
     function toggleTheme() {
@@ -387,10 +316,11 @@
     updateThemeIcon(savedTheme);
 
     // Initialize auth state when page loads
-    renderAuthState();
-    if (isAuthed()) { document.getElementById('dashboard').style.display='block'; fetchAndShowProgress(); }
+    // Show dashboard and progress by default
+    document.getElementById('dashboard').style.display='block';
+    fetchAndShowProgress();
 
-    // UiPath automation integration
+    // Report generation
     async function generateReport() {
       const btn = document.getElementById('generateReportBtn');
       const originalText = btn.innerHTML;
@@ -400,7 +330,7 @@
         
         const response = await fetch(API + '/api/uipath/generate-report', {
           method: 'POST',
-          headers: Object.assign({'Content-Type': 'application/json'}, authHeader())
+          headers: {'Content-Type': 'application/json'}
         });
         
         const data = await response.json();

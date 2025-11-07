@@ -426,7 +426,8 @@ app.post('/api/uipath/generate-report', async (req, res) => {
     // For now, we'll just mock a successful response
     setTimeout(() => {
       // This would be replaced by actual UiPath webhook callback
-      console.log('Mock report generated for user:', req.user.id);
+      // Don't rely on req.user for the mock implementation (page is public)
+      console.log('Mock report generated (no user context)');
     }, 5000);
 
     res.json({ 

@@ -32,12 +32,10 @@
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* Add smooth scrolling to page */
 html {
   scroll-behavior: smooth;
 }
 
-/* Planner Page Styles */
 .planner-header {
   text-align: center;
   padding: 8rem 2rem 2rem;
@@ -279,7 +277,6 @@ html {
   border: 1px solid var(--border-color);
 }
 
-/* Loading Overlay */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -308,7 +305,6 @@ html {
   100% { transform: rotate(360deg); }
 }
 
-/* Button Variations */
 .ai-button.secondary {
   background: #e2e8f0;
   color: var(--text-color);
@@ -318,7 +314,6 @@ html {
   background: #cbd5e0;
 }
 
-/* Topic Resources */
 #topicResources {
   margin-top: 1rem;
   padding-top: 1rem;

@@ -25,6 +25,7 @@
         <i class="fas fa-moon" id="themeIcon"></i>
       </button>
     </div>
+    </div>
   </nav>
         </form>
       </div>
@@ -39,47 +40,6 @@
 
   <!-- Main Content -->
   <main>
-    <!-- Progress Overview -->
-    <section class="progress-section">
-      <div class="section-header">
-        <h2>Your Progress Overview</h2>
-        <p>Track your learning journey and weekly achievements</p>
-      </div>
-      <div class="progress-container">
-        <div class="chart-container">
-          <canvas id="progressChart"></canvas>
-        </div>
-        <div class="stats-container">
-          <div class="stat-card">
-            <i class="fas fa-book-open"></i>
-            <h3>Topics Completed</h3>
-            <p id="topicsCompleted">0</p>
-          </div>
-          <div class="stat-card">
-            <i class="fas fa-chart-line"></i>
-            <h3>Weekly Progress</h3>
-            <p id="weeklyProgress">0%</p>
-          </div>
-          <div class="stat-card">
-            <i class="fas fa-trophy"></i>
-            <h3>Test Score</h3>
-            <p id="avgTestScore">0%</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Weekly Topic Planner -->
-    <section class="weekly-planner-section">
-      <div class="section-header">
-        <h2>Weekly Learning Plan</h2>
-        <p>Your personalized study roadmap</p>
-      </div>
-      <div id="weeklyPlanGrid" class="weekly-plan-grid">
-        <!-- Weekly plans will be populated here -->
-      </div>
-    </section>
-
     <!-- Study Resources -->
     <section class="intro">
       <div class="section-header">
@@ -114,22 +74,92 @@
       </table>
     </section>
 
-    <section class="planner-controls">
-      <div class="exam-select">
-        <label for="examSelect">Select Your Exam:</label>
-        <select id="examSelect" onchange="loadPlannerContent()">
-          <option value="KCET">KCET</option>
-          <option value="NEET">NEET</option>
-          <option value="JEE">JEE</option>
-          <option value="PUC">PUC</option>
-          <option value="10th">10th Board</option>
-        </select>
+    <!-- Progress Overview -->
+    <section class="progress-section">
+      <div class="section-header">
+        <h2>Your Progress Overview</h2>
+        <p>Track your learning journey and weekly achievements</p>
       </div>
-      <div class="timer-controls">
-        <span id="timerDisplay">00:00:00</span>
-        <button onclick="toggleTimer()" class="ai-button" id="timerBtn">Start Timer</button>
+      <div class="progress-container">
+        <div class="chart-container">
+          <canvas id="progressChart"></canvas>
+        </div>
+        <div class="stats-container">
+          <div class="stat-card">
+            <i class="fas fa-book-open"></i>
+            <h3>Topics Completed</h3>
+            <p id="topicsCompleted">5</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Weekly Progress</h3>
+            <p id="weeklyProgress">15%</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-trophy"></i>
+            <h3>Test Score</h3>
+            <p id="testScore">15%</p>
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- Weekly Test Section -->
+    <section class="weekly-test-section">
+      <div class="section-header">
+        <h2>Weekly Test</h2>
+        <p>Test your knowledge with a 20-question assessment</p>
+      </div>
+      <div class="test-container">
+        <div class="exam-select-container">
+          <label for="examSelect">Select your exam:</label>
+          <select id="examSelect" required>
+            <option value="">Choose exam...</option>
+            <option value="KCET">KCET</option>
+            <option value="NEET">NEET</option>
+            <option value="JEE">JEE</option>
+            <option value="PUC">PUC</option>
+            <option value="10th">10th Board</option>
+          </select>
+          <button id="startTestBtn" class="ai-button" onclick="generateWeeklyTest()">
+            <i class="fas fa-file-alt"></i> Start Weekly Test
+          </button>
+        </div>
+        <div id="testContent" style="display: none;">
+          <div id="questions"></div>
+          <button id="submitTestBtn" class="ai-button" onclick="submitWeeklyTest()">
+            <i class="fas fa-check"></i> Submit Test
+          </button>
+        </div>
+        <div id="testResults" style="display: none;">
+          <h3>Test Results</h3>
+          <p>Score: <span id="scoreDisplay">0</span>%</p>
+          <p>Time Taken: <span id="timeTaken">0:00</span></p>
+          <button onclick="closeTestResults()" class="ai-button secondary">
+            <i class="fas fa-times"></i> Close
+          </button>
+        </div>
+      </div>
+            <p id="avgTestScore">0%</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Topic Planner -->
+    <section class="weekly-planner-section">
+      <div class="section-header">
+        <h2>Weekly Learning Plan</h2>
+        <p>Your personalized study roadmap</p>
+      </div>
+      <div id="weeklyPlanGrid" class="weekly-plan-grid">
+        <!-- Weekly plans will be populated here -->
+      </div>
+      <!-- Timer removed per request -->
+      <!-- Weekly test removed from planner — use Home page Weekly Test instead -->
+    </section>
+
+    <!-- Weekly test removed from planner -->
 
     <div class="planner-layout">
       <div id="progressContainer" class="progress-container" style="display:none;">
@@ -311,47 +341,7 @@
         text.textContent = `${progress.percentage}% Complete (${progress.completed}/${progress.total} topics)`;
       }
 
-      // Study Timer
-      let timerInterval = null;
-      let startTime = 0;
-      let isTimerRunning = false;
-
-      function toggleTimer() {
-        if (isTimerRunning) {
-          clearInterval(timerInterval);
-          document.getElementById('timerBtn').textContent = 'Start Timer';
-          saveStudyTime();
-        } else {
-          startTime = Date.now() - (parseInt(localStorage.getItem('studyTime_' + currentExam) || '0') * 1000);
-          timerInterval = setInterval(updateTimer, 1000);
-          document.getElementById('timerBtn').textContent = 'Stop Timer';
-        }
-        isTimerRunning = !isTimerRunning;
-      }
-
-      function updateTimer() {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        const hours = Math.floor(elapsed / 3600);
-        const minutes = Math.floor((elapsed % 3600) / 60);
-        const seconds = elapsed % 60;
-        document.getElementById('timerDisplay').textContent = 
-          `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      }
-
-      function saveStudyTime() {
-        if (!currentExam) return;
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        localStorage.setItem('studyTime_' + currentExam, elapsed.toString());
-        
-        // Update backend with study time
-        if (isAuthed()) {
-          fetch(API + '/api/progress/study-time', {
-            method: 'POST',
-            headers: Object.assign({'Content-Type': 'application/json'}, authHeader()),
-            body: JSON.stringify({ exam: currentExam, seconds: elapsed })
-          }).catch(console.error);
-        }
-      }
+      // Study timer removed (disabled) per user request
 
       // Notes Management
       function takeNotes() {
@@ -385,13 +375,9 @@
         try {
           const res = await fetch(API + '/api/progress?exam=' + encodeURIComponent(currentExam), { headers: authHeader() });
           const data = await res.json();
-          if (res.ok) {
+            if (res.ok) {
             updateProgress(data.progress[0] || { percentage: 0, completed: 0, total: 5 });
             await loadTopicDetails(data.progress[0]?.completed || 0);
-            // Load saved study time
-            const savedTime = localStorage.getItem('studyTime_' + currentExam) || '0';
-            startTime = Date.now() - (parseInt(savedTime) * 1000);
-            updateTimer();
           }
         } catch (e) {
           console.error(e);
@@ -440,6 +426,8 @@
           </a>
         `).join('');
       }
+
+      // Weekly test functionality removed from planner (use Home page for tests)
 
       // Progress Chart
       async function initProgressChart() {
@@ -567,6 +555,281 @@
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.documentElement.setAttribute('data-theme', savedTheme);
       updateThemeIcon(savedTheme);
+
+      // Report Generation Functions
+      async function generateReport() {
+        const exam = document.getElementById('examSelect').value;
+        const testScores = localStorage.getItem(`testScores_${exam}`) ? 
+          JSON.parse(localStorage.getItem(`testScores_${exam}`)) : [];
+        const studyTime = localStorage.getItem(`studyTime_${exam}`) || 0;
+        const notes = getAllNotes(exam);
+        
+        // Create report content
+        const reportContent = `
+          <div class="report-container">
+            <h2>Study Progress Report - ${exam}</h2>
+            <div class="report-section">
+              <h3>Overview</h3>
+              <p>Total Study Time: ${formatTime(studyTime)}</p>
+              <p>Tests Completed: ${testScores.length}</p>
+              <p>Average Score: ${calculateAverageScore(testScores)}%</p>
+            </div>
+            
+            <div class="report-section">
+              <h3>Test History</h3>
+              ${testScores.map((score, index) => `
+                <div class="test-entry">
+                  <span>Test ${index + 1}: ${score}%</span>
+                </div>
+              `).join('') || '<p>No tests taken yet</p>'}
+            </div>
+            
+            <div class="report-section">
+              <h3>Study Notes</h3>
+              ${notes.map(note => `
+                <div class="note-entry">
+                  <h4>${note.topic}</h4>
+                  <p>${note.content}</p>
+                </div>
+              `).join('') || '<p>No notes taken yet</p>'}
+            </div>
+          </div>
+        `;
+
+        // Create a popup with the report
+        const reportPopup = document.createElement('div');
+        reportPopup.className = 'report-popup';
+        reportPopup.innerHTML = `
+          <div class="report-content">
+            <button class="close-report" onclick="this.parentElement.parentElement.remove()">×</button>
+            ${reportContent}
+            <div class="report-actions">
+              <button onclick="printReport()" class="ai-button">
+                <i class="fas fa-print"></i> Print Report
+              </button>
+              <button onclick="downloadReport()" class="ai-button secondary">
+                <i class="fas fa-download"></i> Download PDF
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(reportPopup);
+      }
+
+      function formatTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        return `${hrs} hours, ${mins} minutes`;
+      }
+
+      function calculateAverageScore(scores) {
+        if (!scores.length) return 0;
+        const sum = scores.reduce((a, b) => a + b, 0);
+        return Math.round(sum / scores.length);
+      }
+
+      function getAllNotes(exam) {
+        const notes = [];
+        for (let key in localStorage) {
+          if (key.startsWith(`notes_${exam}_`)) {
+            const topic = key.replace(`notes_${exam}_`, '');
+            const content = localStorage.getItem(key);
+            notes.push({ topic, content });
+          }
+        }
+        return notes;
+      }
+
+      function printReport() {
+        window.print();
+      }
+
+      function downloadReport() {
+        // This is a placeholder - in a real implementation, 
+        // you would use a library like jsPDF to generate a PDF
+        alert('PDF download feature coming soon!');
+      }
+
+      // Weekly Test Functions
+      let currentTest = null;
+      let startTime = null;
+
+      function getQuestionBank(exam) {
+        // Question banks for different exams
+        const questionBanks = {
+          'KCET': [
+            { q: 'What is the SI unit of force?', options: ['Newton', 'Joule', 'Watt', 'Pascal'], a: 0 },
+            { q: 'Which element has the atomic number 1?', options: ['Helium', 'Hydrogen', 'Carbon', 'Oxygen'], a: 1 },
+            { q: 'What is the value of π (pi) to two decimal places?', options: ['3.14', '3.41', '3.12', '3.16'], a: 0 },
+            { q: 'The speed of light is approximately:', options: ['3 × 10⁸ m/s', '3 × 10⁷ m/s', '3 × 10⁶ m/s', '3 × 10⁹ m/s'], a: 0 },
+            { q: 'Which state of matter has a definite volume but no definite shape?', options: ['Solid', 'Liquid', 'Gas', 'Plasma'], a: 1 },
+            { q: 'The atomic mass of an element is mainly due to:', options: ['Protons and neutrons', 'Electrons and protons', 'Only neutrons', 'Only electrons'], a: 0 },
+            { q: 'What is the unit of electric current?', options: ['Volt', 'Ampere', 'Ohm', 'Watt'], a: 1 },
+            { q: 'The process of conversion of water vapor to liquid is called:', options: ['Evaporation', 'Condensation', 'Sublimation', 'Freezing'], a: 1 },
+            { q: 'Which of these is a vector quantity?', options: ['Mass', 'Time', 'Velocity', 'Temperature'], a: 2 },
+            { q: 'The SI unit of pressure is:', options: ['Newton', 'Pascal', 'Joule', 'Watt'], a: 1 },
+            { q: 'What is the valency of carbon?', options: ['2', '3', '4', '5'], a: 2 },
+            { q: 'The pH of pure water is:', options: ['6', '7', '8', '9'], a: 1 },
+            { q: 'Which is the most abundant element in Earth\'s crust?', options: ['Iron', 'Silicon', 'Oxygen', 'Carbon'], a: 2 },
+            { q: 'What is the unit of frequency?', options: ['Hertz', 'Meter', 'Second', 'Newton'], a: 0 },
+            { q: 'The process of nuclear fusion requires:', options: ['Low temperature', 'High temperature', 'Room temperature', 'Zero temperature'], a: 1 },
+            { q: 'Which law states that energy cannot be created or destroyed?', options: ['Newton\'s First Law', 'Law of Conservation of Mass', 'Law of Conservation of Energy', 'Ohm\'s Law'], a: 2 },
+            { q: 'What is the charge of an electron?', options: ['Positive', 'Negative', 'Neutral', 'Variable'], a: 1 },
+            { q: 'The unit of electric potential is:', options: ['Ampere', 'Volt', 'Ohm', 'Watt'], a: 1 },
+            { q: 'Which metal is liquid at room temperature?', options: ['Iron', 'Mercury', 'Copper', 'Gold'], a: 1 },
+            { q: 'What is the SI unit of energy?', options: ['Newton', 'Pascal', 'Joule', 'Watt'], a: 2 }
+          ],
+          'NEET': [
+            { q: 'Which organelle is known as the powerhouse of the cell?', options: ['Mitochondria', 'Nucleus', 'Golgi body', 'Ribosome'], a: 0 },
+            { q: 'What is the normal blood pressure reading?', options: ['120/80', '140/90', '100/70', '160/100'], a: 0 },
+            { q: 'Which blood type is the universal donor?', options: ['A+', 'B+', 'O-', 'AB+'], a: 2 },
+            { q: 'The human heart has how many chambers?', options: ['2', '3', '4', '5'], a: 2 },
+            { q: 'DNA replication is:', options: ['Conservative', 'Semi-conservative', 'Dispersive', 'None of these'], a: 1 },
+            { q: 'Which vitamin is produced when skin is exposed to sunlight?', options: ['Vitamin A', 'Vitamin B', 'Vitamin C', 'Vitamin D'], a: 3 },
+            { q: 'The human body has how many pairs of chromosomes?', options: ['22', '23', '24', '25'], a: 1 },
+            { q: 'Which organ produces insulin?', options: ['Liver', 'Kidneys', 'Pancreas', 'Spleen'], a: 2 },
+            { q: 'Red blood cells live for approximately:', options: ['60 days', '90 days', '120 days', '150 days'], a: 2 },
+            { q: 'The pH of blood is normally:', options: ['6.8', '7.0', '7.4', '8.0'], a: 2 },
+            { q: 'Which part of the brain controls balance?', options: ['Cerebrum', 'Cerebellum', 'Medulla', 'Hypothalamus'], a: 1 },
+            { q: 'The smallest bone in human body is located in:', options: ['Nose', 'Ear', 'Finger', 'Toe'], a: 1 },
+            { q: 'Which enzyme is present in saliva?', options: ['Pepsin', 'Amylase', 'Trypsin', 'Lipase'], a: 1 },
+            { q: 'The normal body temperature in humans is:', options: ['36°C', '37°C', '38°C', '39°C'], a: 1 },
+            { q: 'Which blood cells help in clotting?', options: ['RBC', 'WBC', 'Platelets', 'Plasma'], a: 2 },
+            { q: 'The human eye forms which type of image?', options: ['Virtual and erect', 'Real and erect', 'Virtual and inverted', 'Real and inverted'], a: 3 },
+            { q: 'Which vitamin helps in blood clotting?', options: ['Vitamin A', 'Vitamin B', 'Vitamin K', 'Vitamin E'], a: 2 },
+            { q: 'The number of bones in adult human body is:', options: ['196', '206', '216', '226'], a: 1 },
+            { q: 'Which gland is known as master gland?', options: ['Thyroid', 'Pituitary', 'Adrenal', 'Pancreas'], a: 1 },
+            { q: 'Which blood group is universal recipient?', options: ['A+', 'B+', 'O+', 'AB+'], a: 3 }
+          ],
+          'JEE': [
+            // Add JEE questions here
+            { q: 'What is the dimension of force?', options: ['MLT⁻²', 'MLT⁻¹', 'ML²T⁻²', 'ML²T⁻¹'], a: 0 },
+            { q: 'Which quantum number determines the size of an orbital?', options: ['Principal', 'Azimuthal', 'Magnetic', 'Spin'], a: 0 },
+            { q: 'The value of acceleration due to gravity at the center of earth is:', options: ['9.8 m/s²', '4.9 m/s²', '0 m/s²', 'Infinity'], a: 2 },
+            { q: 'What is the unit of Planck\'s constant?', options: ['Joule-second', 'Joule/second', 'Watt-second', 'Watt/second'], a: 0 }
+            // Add more JEE questions as needed
+          ],
+          'PUC': [
+            // Add PUC questions here
+            { q: 'What is the molecular formula of glucose?', options: ['C₆H₁₂O₆', 'C₆H₁₀O₅', 'C₆H₆O₆', 'C₆H₈O₆'], a: 0 },
+            { q: 'The number of significant figures in 0.00230 is:', options: ['2', '3', '4', '5'], a: 1 },
+            { q: 'Which is the strongest electromagnetic force?', options: ['Gravitational', 'Electromagnetic', 'Strong nuclear', 'Weak nuclear'], a: 2 },
+            { q: 'The S.I unit of electric charge is:', options: ['Volt', 'Ampere', 'Coulomb', 'Ohm'], a: 2 }
+            // Add more PUC questions as needed
+          ],
+          '10th': [
+            // Add 10th board questions here
+            { q: 'What is the chemical formula for water?', options: ['H₂O', 'CO₂', 'NaCl', 'H₂SO₄'], a: 0 },
+            { q: 'Which is the largest planet in our solar system?', options: ['Mars', 'Jupiter', 'Saturn', 'Neptune'], a: 1 },
+            { q: 'What is photosynthesis?', options: ['Respiration process', 'Food making process', 'Decomposition', 'None of these'], a: 1 },
+            { q: 'The atomic number of Carbon is:', options: ['5', '6', '7', '8'], a: 1 }
+            // Add more 10th questions as needed
+          ]
+        };
+        
+        return questionBanks[exam] || [];
+      }
+
+      function generateWeeklyTest() {
+        const exam = document.getElementById('examSelect').value;
+        if (!exam) {
+          alert('Please select an exam first');
+          return;
+        }
+
+        const questionBank = getQuestionBank(exam);
+        if (questionBank.length < 20) {
+          alert('Not enough questions available for this exam yet. Please try another exam.');
+          return;
+        }
+
+        // Randomly select 20 questions
+        const questions = shuffleArray([...questionBank]).slice(0, 20);
+        currentTest = {
+          exam: exam,
+          questions: questions,
+          answers: new Array(20).fill(null),
+          startTime: new Date()
+        };
+
+        // Display questions
+        const questionsHtml = questions.map((q, i) => `
+          <div class="question">
+            <p><strong>Q${i + 1}.</strong> ${q.q}</p>
+            <div class="options">
+              ${q.options.map((opt, j) => `
+                <label>
+                  <input type="radio" name="q${i}" value="${j}" onclick="saveAnswer(${i}, ${j})">
+                  ${opt}
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+
+        document.getElementById('questions').innerHTML = questionsHtml;
+        document.getElementById('testContent').style.display = 'block';
+        document.getElementById('startTestBtn').style.display = 'none';
+        startTime = new Date();
+      }
+
+      function saveAnswer(questionIndex, answerIndex) {
+        if (currentTest) {
+          currentTest.answers[questionIndex] = answerIndex;
+        }
+      }
+
+      function submitWeeklyTest() {
+        if (!currentTest) {
+          alert('No test in progress');
+          return;
+        }
+
+        // Check if all questions are answered
+        const unanswered = currentTest.answers.filter(a => a === null).length;
+        if (unanswered > 0) {
+          if (!confirm(`You have ${unanswered} unanswered question(s). Do you want to submit anyway?`)) {
+            return;
+          }
+        }
+
+        // Calculate score (each question is worth 5 points)
+        const score = currentTest.questions.reduce((total, q, i) => {
+          return total + (currentTest.answers[i] === q.a ? 5 : 0);
+        }, 0);
+
+        const timeTaken = Math.round((new Date() - currentTest.startTime) / 1000); // in seconds
+
+        // Save score to localStorage
+        const examScores = JSON.parse(localStorage.getItem(`testScores_${currentTest.exam}`) || '[]');
+        examScores.push(score);
+        localStorage.setItem(`testScores_${currentTest.exam}`, JSON.stringify(examScores));
+
+        // Update UI
+        document.getElementById('scoreDisplay').textContent = score;
+        document.getElementById('timeTaken').textContent = formatTime(timeTaken);
+        document.getElementById('testContent').style.display = 'none';
+        document.getElementById('testResults').style.display = 'block';
+        document.getElementById('testScore').textContent = score + '%';
+
+        // Reset test state
+        currentTest = null;
+        startTime = null;
+      }
+
+      function closeTestResults() {
+        document.getElementById('testResults').style.display = 'none';
+        document.getElementById('startTestBtn').style.display = 'block';
+      }
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
 
       // Initialize on page load
       renderAuthState();

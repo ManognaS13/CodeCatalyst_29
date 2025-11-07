@@ -99,6 +99,98 @@ html {
   font-weight: 500;
 }
 
+/* Weekly Test Section Styles */
+.weekly-test-section {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.test-container {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  margin-top: 1rem;
+}
+
+.exam-select-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.exam-select-container label {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.exam-select-container select {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-family: inherit;
+  min-width: 150px;
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+.question {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: var(--background-color);
+  border-radius: 8px;
+}
+
+.question p {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.options label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.options label:hover {
+  background: rgba(75, 123, 236, 0.1);
+}
+
+#testResults {
+  text-align: center;
+  padding: 2rem;
+}
+
+#testResults h3 {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+#testResults p {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+#scoreDisplay {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
 /* Improved Planner Layout */
 .planner-layout {
   max-width: 1200px;
@@ -288,6 +380,163 @@ html {
   font-size: 1.5rem;
   border-bottom: 2px solid #eee;
   padding-bottom: 0.5rem;
+}
+
+/* Test Section Styles */
+.test-section {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  box-shadow: var(--shadow);
+}
+
+.question-container {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--background-color);
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.option-label:hover {
+  background-color: rgba(75, 123, 236, 0.1);
+}
+
+.test-results {
+  text-align: center;
+}
+
+.score-display {
+  font-size: 1.5rem;
+  margin: 2rem 0;
+  padding: 1rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+}
+
+.answers-review {
+  text-align: left;
+  margin-top: 2rem;
+}
+
+.answer-item {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.answer-item.correct {
+  border-left: 4px solid #22c55e;
+}
+
+.answer-item.incorrect {
+  border-left: 4px solid #ef4444;
+}
+
+.test-controls {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Report Styles */
+.report-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.report-content {
+  background: var(--card-bg);
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+}
+
+.close-report {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+.report-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--background-color);
+  border-radius: 8px;
+}
+
+.test-entry {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.note-entry {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.report-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+@media print {
+  .report-popup {
+    position: relative;
+    background: none;
+  }
+
+  .report-content {
+    box-shadow: none;
+  }
+
+  .close-report,
+  .report-actions {
+    display: none;
+  }
 }
 
 .progress-list {

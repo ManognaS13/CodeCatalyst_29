@@ -3,49 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduPlanner - Study Plan</title>
+  <title>ECHOES OF EFFORTS - Study Plan</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-  <nav class="navbar">
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-brand">
-      <img src="assets/logo.jpg" alt="Logo" class="nav-logo">
-      <span>EduPlanner</span>
+      <img src="assets/logo.jpg" alt="ECHOES OF EFFORTS Logo" class="nav-logo">
+      <span>ECHOES OF EFFORTS</span>
     </div>
     <div class="nav-links">
-      <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
-      <a href="planner.html" class="nav-link active"><i class="fas fa-calendar-alt"></i> Planner</a>
+      <a href="index.html" class="nav-link"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
+      <a href="planner.html" class="nav-link active" aria-current="page"><i class="fas fa-calendar-alt" aria-hidden="true"></i> Planner</a>
     </div>
     <div class="nav-actions" id="navActions">
-      <button id="loginBtn" class="nav-button" onclick="showAuthModal('login')">Login</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
     </div>
   </nav>
-
-  <!-- Auth Modal -->
-  <div id="authModal" class="auth-modal" style="display:none;">
-    <div class="auth-modal-content">
-      <button class="auth-close" onclick="closeAuthModal()">&times;</button>
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Login</button>
-        <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Register</button>
-      </div>
-      <div id="authBody">
-        <form id="authForm" onsubmit="return submitAuthForm()">
-          <div id="fieldName" style="display:none;">
-            <label>Name</label>
-            <input type="text" id="authName" placeholder="Your name">
-          </div>
-          <label>Email</label>
-          <input type="email" id="authEmail" placeholder="you@example.com" required>
-          <label>Password</label>
-          <input type="password" id="authPassword" placeholder="Password" required>
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button type="submit" class="ai-button">Submit</button>
-            <button type="button" class="ai-button" onclick="closeAuthModal()" style="background:#ccc;color:#333;">Cancel</button>
-          </div>
         </form>
       </div>
     </div>
@@ -59,7 +39,53 @@
 
   <!-- Main Content -->
   <main>
+    <!-- Progress Overview -->
+    <section class="progress-section">
+      <div class="section-header">
+        <h2>Your Progress Overview</h2>
+        <p>Track your learning journey and weekly achievements</p>
+      </div>
+      <div class="progress-container">
+        <div class="chart-container">
+          <canvas id="progressChart"></canvas>
+        </div>
+        <div class="stats-container">
+          <div class="stat-card">
+            <i class="fas fa-book-open"></i>
+            <h3>Topics Completed</h3>
+            <p id="topicsCompleted">0</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-chart-line"></i>
+            <h3>Weekly Progress</h3>
+            <p id="weeklyProgress">0%</p>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-trophy"></i>
+            <h3>Test Score</h3>
+            <p id="avgTestScore">0%</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Topic Planner -->
+    <section class="weekly-planner-section">
+      <div class="section-header">
+        <h2>Weekly Learning Plan</h2>
+        <p>Your personalized study roadmap</p>
+      </div>
+      <div id="weeklyPlanGrid" class="weekly-plan-grid">
+        <!-- Weekly plans will be populated here -->
+      </div>
+    </section>
+
+    <!-- Study Resources -->
     <section class="intro">
+      <div class="section-header">
+        <h2>Study Schedule</h2>
+        <p>Your daily learning path</p>
+      </div>
       <table>
         <tr>
           <th>Day</th>
@@ -86,7 +112,6 @@
           <td>Revision + Practice Tests</td>
         </tr>
       </table>
-
     </section>
 
     <section class="planner-controls">
@@ -148,7 +173,7 @@
     </main>
 
     <script>
-      const API = 'http://localhost:3000';
+      const API = 'http://localhost:4000';
       let currentExam = '';
       let currentTopic = '';
 
@@ -167,30 +192,12 @@
         showAuthModal(mode);
       }
 
-      async function submitAuthForm() {
-        const mode = document.getElementById('fieldName').style.display === 'none' ? 'login' : 'register';
-        const name = document.getElementById('authName').value.trim();
-        const email = document.getElementById('authEmail').value.trim();
-        const password = document.getElementById('authPassword').value;
-        if (!email || !password) { alert('Email and password required'); return false; }
-        if (mode === 'login') await loginUser(email, password);
-        else await registerUser(name, email, password);
-        return false;
-      }
 
       async function registerUser(name, email, password) {
         try {
           const res = await fetch(API + '/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, email, password }) });
           const j = await res.json();
           if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Registered & logged in'); loadPlannerContent(); } else alert(j.error || JSON.stringify(j));
-        } catch (e) { alert('Network error'); }
-      }
-
-      async function loginUser(email, password) {
-        try {
-          const res = await fetch(API + '/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
-          const j = await res.json();
-          if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Logged in'); loadPlannerContent(); } else alert(j.error || JSON.stringify(j));
         } catch (e) { alert('Network error'); }
       }
 
@@ -204,34 +211,82 @@
         if (!nav) return;
         nav.innerHTML = '';
         if (isAuthed()) {
-          const out = document.createElement('div');
-          out.style.display = 'flex';
-          out.style.gap = '8px';
-          const lbtn = document.createElement('button'); lbtn.textContent='Logout'; lbtn.className='nav-button'; lbtn.onclick = logout;
-          out.appendChild(lbtn); nav.appendChild(out);
+          // Get user info from token
+          const token = localStorage.getItem('edu_token');
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const name = payload.name || 'User';
+          const email = payload.email;
+          const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+
+          // Create profile container
+          const profile = document.createElement('div');
+          profile.className = 'user-profile';
+          profile.onclick = toggleProfileDropdown;
+          
+          // Add profile picture with initials
+          const picture = document.createElement('div');
+          picture.className = 'profile-picture';
+          picture.textContent = initials;
+          
+          // Add user info
+          const info = document.createElement('div');
+          info.className = 'profile-info';
+          info.innerHTML = `
+            <span class="profile-name">${name}</span>
+            <span class="profile-email">${email}</span>
+          `;
+          
+          // Add dropdown menu
+          const dropdown = document.createElement('div');
+          dropdown.className = 'profile-dropdown';
+          dropdown.innerHTML = `
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-user"></i>
+              <span>My Profile</span>
+            </a>
+            <a href="#" class="dropdown-item">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </a>
+            <hr style="border:none; border-top:1px solid var(--border-color); margin:0.5rem 0;">
+            <a href="#" class="dropdown-item" onclick="logout(); return false;">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </a>
+          `;
+          
+          profile.appendChild(picture);
+          profile.appendChild(info);
+          nav.appendChild(profile);
+          nav.appendChild(dropdown);
+          
           document.getElementById('markCompleteBtn').style.display = 'block';
           document.getElementById('progressContainer').style.display = 'block';
         } else {
-          const b = document.createElement('button'); b.textContent = 'Login / Sign up'; b.className='nav-button'; b.onclick = () => showAuthModal('login'); nav.appendChild(b);
+          const b = document.createElement('button');
+          b.className = 'nav-button';
+          nav.appendChild(b);
           hideLoggedInContent();
         }
       }
 
+      function toggleProfileDropdown(e) {
+        e.stopPropagation();
+        const dropdown = document.querySelector('.profile-dropdown');
+        dropdown.classList.toggle('show');
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        const dropdown = document.querySelector('.profile-dropdown');
+        if (dropdown && dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+        }
+      });
+
       function hideLoggedInContent() {
         document.getElementById('markCompleteBtn').style.display = 'none';
         document.getElementById('progressContainer').style.display = 'none';
-      }
-
-      async function loadPlannerContent() {
-        if (!isAuthed()) { alert('Please login first'); return; }
-        currentExam = document.getElementById('examSelect').value;
-        try {
-          const res = await fetch(API + '/api/progress?exam=' + encodeURIComponent(currentExam), { headers: authHeader() });
-          const data = await res.json();
-          if (res.ok) {
-            updateProgress(data.progress[0] || { percentage: 0, completed: 0, total: 5 });
-          }
-        } catch (e) { console.error(e); }
       }
 
       async function markTopicComplete() {
@@ -325,10 +380,7 @@
       }
 
       // Enhanced Content Loading
-      async function loadPlannerContent() {
-        if (!isAuthed()) { alert('Please login first'); return; }
-        currentExam = document.getElementById('examSelect').value;
-        
+          
         showLoading();
         try {
           const res = await fetch(API + '/api/progress?exam=' + encodeURIComponent(currentExam), { headers: authHeader() });
@@ -347,7 +399,7 @@
         } finally {
           hideLoading();
         }
-      }
+
 
       async function loadTopicDetails(completedTopics) {
         const topics = {
@@ -389,15 +441,140 @@
         `).join('');
       }
 
+      // Progress Chart
+      async function initProgressChart() {
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const data = await fetchProgressData();
+        
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.labels,
+            datasets: [{
+              label: 'Weekly Progress',
+              data: data.progress,
+              borderColor: 'rgb(37, 99, 235)',
+              backgroundColor: 'rgba(37, 99, 235, 0.1)',
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Your Learning Progress'
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                  display: true,
+                  text: 'Completion %'
+                }
+              }
+            }
+          }
+        });
+      }
+
+      async function fetchProgressData() {
+        try {
+          const response = await fetch(API + '/api/progress/weekly', {
+            headers: authHeader()
+          });
+          return await response.json();
+        } catch (error) {
+          console.error('Error fetching progress:', error);
+          return { labels: [], progress: [] };
+        }
+      }
+
+      // Weekly Topic Planning
+      async function loadWeeklyPlan() {
+        try {
+          const response = await fetch(API + '/api/planner/weekly-topics', {
+            headers: authHeader()
+          });
+          const plan = await response.json();
+          
+          const plannerGrid = document.getElementById('weeklyPlanGrid');
+          plannerGrid.innerHTML = plan.weeks.map((week, index) => `
+            <div class="week-card">
+              <h3>Week ${index + 1}</h3>
+              <div class="topics-list">
+                ${week.topics.map(topic => `
+                  <div class="topic-item ${topic.completed ? 'completed' : ''}">
+                    <span>${topic.name}</span>
+                    ${topic.completed ? 
+                      '<i class="fas fa-check-circle"></i>' : 
+                      '<button onclick="startTopic(' + index + ', \'' + topic.id + '\')">Start</button>'
+                    }
+                  </div>
+                `).join('')}
+              </div>
+              <div class="week-progress">
+                <div class="progress-bar" style="width: ${week.progress}%"></div>
+                <span>${week.progress}% Complete</span>
+              </div>
+            </div>
+          `).join('');
+        } catch (error) {
+          console.error('Error loading weekly plan:', error);
+        }
+      }
+
+      async function startTopic(weekIndex, topicId) {
+        try {
+          await fetch(API + '/api/planner/start-topic', {
+            method: 'POST',
+            headers: Object.assign({'Content-Type': 'application/json'}, authHeader()),
+            body: JSON.stringify({ weekIndex, topicId })
+          });
+          loadWeeklyPlan(); // Refresh the plan
+        } catch (error) {
+          console.error('Error starting topic:', error);
+        }
+      }
+
       // Error Handling Enhancement
       window.addEventListener('unhandledrejection', function(event) {
         hideLoading();
         alert('An error occurred. Please check your connection and try again.');
       });
 
+      // Dark Mode Toggle
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+      }
+
+      function updateThemeIcon(theme) {
+        const icon = document.getElementById('themeIcon');
+        if (icon) {
+          icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+      }
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateThemeIcon(savedTheme);
+
       // Initialize on page load
       renderAuthState();
-      if (isAuthed()) loadPlannerContent();
+      if (isAuthed()) {
+        loadPlannerContent();
+        initProgressChart();
+        loadWeeklyPlan();
+      }
     </script>
 </body>
 </html>

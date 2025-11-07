@@ -10,48 +10,28 @@
 </head>
 
 <body>
-  <nav class="navbar">
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-brand">
-      <img src="assets/logo.jpg" alt="Logo" class="nav-logo">
+      <img src="assets/logo.jpg" alt="ECHOES OF EFFORTS Logo" class="nav-logo">
       <span>ECHOES OF EFFORTS</span>
     </div>
     <div class="nav-links">
-      <a href="index.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
-      <a href="planner.html" class="nav-link"><i class="fas fa-calendar-alt"></i> Planner</a>
+      <a href="index.html" class="nav-link active" aria-current="page"><i class="fas fa-home" aria-hidden="true"></i> Home</a>
+      <a href="planner.html" class="nav-link"><i class="fas fa-calendar-alt" aria-current="true"></i> Planner</a>
     </div>
     <div class="nav-actions" id="navActions">
-      <button id="loginBtn" class="nav-button" onclick="showAuthModal('login')">Login</button>
+      <button id="generateReportBtn" class="nav-button" onclick="generateReport()">Generate Report <i class="fas fa-file-alt"></i></button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
     </div>
   </nav>
-
-  <!-- Auth Modal -->
-  <div id="authModal" class="auth-modal" style="display:none;">
-    <div class="auth-modal-content">
-      <button class="auth-close" onclick="closeAuthModal()">&times;</button>
-      <div class="auth-tabs">
-        <button id="tabLogin" class="auth-tab active" onclick="showAuthTab('login')">Login</button>
-        <button id="tabRegister" class="auth-tab" onclick="showAuthTab('register')">Register</button>
-      </div>
-      <div id="authBody">
-        <form id="authForm" onsubmit="return submitAuthForm()">
-          <div id="fieldName" style="display:none;">
-            <label>Name</label>
-            <input type="text" id="authName" placeholder="Your name">
-          </div>
-          <label>Email</label>
-          <input type="email" id="authEmail" placeholder="you@example.com" required>
-          <label>Password</label>
-          <input type="password" id="authPassword" placeholder="Password" required>
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button type="submit" class="ai-button">Submit</button>
-            <button type="button" class="ai-button" onclick="closeAuthModal()" style="background:#ccc;color:#333;">Cancel</button>
-          </div>
         </form>
       </div>
     </div>
   </div>
 
-  <header class="hero">
+  <header class="hero" role="banner">
     <div class="hero-content">
       <h1 class="hero-title">ECHOES OF EFFORTS</h1>
       <p class="hero-subtitle">"PLAN YOUR ECHOES INTO BRILLIANCE"</p>
@@ -59,41 +39,40 @@
     </div>
   </header>
 
-  <main>
-    <section class="exam-selector">
-      <h2>Choose Your Path to Success</h2>
+  <main role="main">
+    <section class="exam-selector" aria-labelledby="exam-selector-heading">
+      <h2 id="exam-selector-heading">Choose Your Path to Success</h2>
       <p>Select your exam to get a personalized study plan and curated resources</p>
       
-      <div class="exam-grid">
-        <div class="exam-card" onclick="window.location.href='kcet.html'">
-          <i class="fas fa-graduation-cap"></i>
+      <div class="exam-grid" role="list">
+        <div class="exam-card" role="listitem" onclick="window.location.href='kcet.html'" tabindex="0" onkeypress="if(event.key==='Enter') window.location.href='kcet.html'" aria-label="KCET - Karnataka Common Entrance Test">
+          <i class="fas fa-graduation-cap" aria-hidden="true"></i>
           <h3>KCET</h3>
           <p>Karnataka Common Entrance Test</p>
         </div>
-        <div class="exam-card" onclick="window.location.href='neet.html'">
-          <i class="fas fa-heartbeat"></i>
+        <div class="exam-card" role="listitem" onclick="window.location.href='neet.html'" tabindex="0" onkeypress="if(event.key==='Enter') window.location.href='neet.html'" aria-label="NEET - National Eligibility cum Entrance Test">
+          <i class="fas fa-heartbeat" aria-hidden="true"></i>
           <h3>NEET</h3>
           <p>National Eligibility cum Entrance Test</p>
         </div>
-        <div class="exam-card" onclick="window.location.href='jee.html'">
-          <i class="fas fa-cog"></i>
+        <div class="exam-card" role="listitem" onclick="window.location.href='jee.html'" tabindex="0" onkeypress="if(event.key==='Enter') window.location.href='jee.html'" aria-label="JEE - Joint Entrance Examination">
+          <i class="fas fa-cog" aria-hidden="true"></i>
           <h3>JEE</h3>
           <p>Joint Entrance Examination</p>
         </div>
-        <div class="exam-card" onclick="window.location.href='pu.html'">
-          <i class="fas fa-book-open"></i>
+        <div class="exam-card" role="listitem" onclick="window.location.href='pu.html'" tabindex="0" onkeypress="if(event.key==='Enter') window.location.href='pu.html'" aria-label="PUC - Pre-University Course">
+          <i class="fas fa-book-open" aria-hidden="true"></i>
           <h3>PUC</h3>
           <p>Pre-University Course</p>
         </div>
-        <div class="exam-card" onclick="window.location.href='10th.html'">
-          <i class="fas fa-school"></i>
+        <center><div class="exam-card" role="listitem" onclick="window.location.href='10th.html'" tabindex="0" onkeypress="if(event.key==='Enter') window.location.href='10th.html'" aria-label="10th Board - SSLC Examination">
+          <i class="fas fa-school" aria-hidden="true"></i>
           <h3>10th Board</h3>
           <p>SSLC Examination</p>
-        </div>
+        </div></center>
       </div>
     </section>
 
-    <!-- Dashboard Section -->
     <section id="dashboard" class="dashboard" style="display:none;">
       <h2>Your Learning Dashboard</h2>
       <div class="dashboard-grid">
@@ -140,7 +119,6 @@
     </section>
   </main>
 
-  <!-- Dashboard / User area (hidden until login) -->
   <section id="dashboard" class="dashboard" style="display:none; padding:2rem 5%;">
     <div class="dashboard-inner">
       <h2>Your Progress</h2>
@@ -268,7 +246,6 @@
     }
 
     function generateStudyPlan(examType, duration) {
-      // Copy of existing local plan logic (keeps resources unchanged)
       const plans = {
         'KCET': { 'core': ['Physics','Chemistry','Mathematics'], 'weight': {'Physics':0.35,'Chemistry':0.35,'Mathematics':0.3} },
         'NEET': { 'core': ['Biology','Physics','Chemistry'], 'weight': {'Biology':0.4,'Physics':0.3,'Chemistry':0.3} },
@@ -303,97 +280,57 @@
       return resources[examType].join('\n');
     }
 
-    // --- Authentication & backend integration (modal-based) ---
-    function showAuthModal(mode = 'login') {
-      const modal = document.getElementById('authModal');
-      modal.style.display = 'flex';
-      showAuthTab(mode);
-    }
-    function closeAuthModal() { document.getElementById('authModal').style.display = 'none'; }
-    function showAuthTab(tab) {
-      document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-      document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
-      document.getElementById('fieldName').style.display = tab === 'register' ? 'block' : 'none';
-      document.getElementById('authForm').dataset.mode = tab;
-    }
-
-    // Called when modal form is submitted
-    async function submitAuthForm() {
-      const mode = document.getElementById('authForm').dataset.mode || 'login';
-      const name = document.getElementById('authName').value.trim();
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      if (!email || !password) { alert('Email and password required'); return false; }
-      if (mode === 'login') await loginUser(email, password);
-      else await registerUser(name, email, password);
-      return false; // prevent form submit
-    }
-
-    async function registerUser(name, email, password) {
-      try {
-        const res = await fetch(API + '/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, email, password }) });
-        const j = await res.json();
-        if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Registered & logged in'); fetchAndShowProgress(); } else alert(j.error || JSON.stringify(j));
-      } catch (e) { alert('Network error'); }
-    }
-
-    async function loginUser(email, password) {
-      try {
-        const res = await fetch(API + '/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
-        const j = await res.json();
-        if (res.ok && j.token) { saveToken(j.token); closeAuthModal(); alert('Logged in'); fetchAndShowProgress(); } else alert(j.error || JSON.stringify(j));
-      } catch (e) { alert('Network error'); }
-    }
-
-    function saveToken(token) { localStorage.setItem('edu_token', token); renderAuthState(); }
-    function logout() { localStorage.removeItem('edu_token'); renderAuthState(); document.getElementById('dashboard').style.display = 'none'; }
-    function isAuthed() { return !!localStorage.getItem('edu_token'); }
-    function authHeader() { const t = localStorage.getItem('edu_token'); return t ? { 'Authorization': 'Bearer ' + t } : {}; }
+    // --- Dashboard is now public, no auth required ---
 
     function renderAuthState() {
-      const nav = document.getElementById('navActions');
-      if (!nav) return;
-      nav.innerHTML = '';
-      if (isAuthed()) {
-        const out = document.createElement('div');
-        out.style.display = 'flex';
-        out.style.gap = '8px';
-        const btn = document.createElement('button'); btn.textContent = 'Dashboard'; btn.className='nav-button'; btn.onclick = () => { document.getElementById('dashboard').style.display = 'block'; fetchAndShowProgress(); };
-        const lbtn = document.createElement('button'); lbtn.textContent='Logout'; lbtn.className='nav-button'; lbtn.onclick = logout;
-        out.appendChild(btn); out.appendChild(lbtn); nav.appendChild(out);
-      } else {
-        const b = document.createElement('button'); b.textContent = 'Login / Sign up'; b.className='nav-button'; b.onclick = () => showAuthModal('login'); nav.appendChild(b);
-      }
+      // Show dashboard by default since auth is removed
+      document.getElementById('dashboard').style.display = 'block';
+      fetchAndShowProgress();
     }
 
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const dropdown = document.querySelector('.profile-dropdown');
+      if (dropdown && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      }
+    });
+
     async function fetchAndShowProgress() {
-      if (!isAuthed()) return;
+      const list = document.getElementById('progressList');
+      list.innerHTML = '<p>Welcome to ECHOES OF EFFORTS! Start your learning journey today.</p>';
+      
       try {
-        const res = await fetch(API + '/api/progress', { headers: Object.assign({'Content-Type':'application/json'}, authHeader()) });
+        const res = await fetch(API + '/api/progress');
         const j = await res.json();
-        if (!res.ok) { console.error(j); return; }
-        const list = document.getElementById('progressList'); list.innerHTML='';
-        if (!j.progress || j.progress.length===0) list.textContent = 'No progress recorded yet.';
-        else {
+        if (res.ok && j.progress && j.progress.length > 0) {
+          list.innerHTML = '';
           j.progress.forEach(p => {
             const div = document.createElement('div');
             div.textContent = `${p.exam}: ${p.percentage}% (${p.completed}/${p.total} units)`;
             list.appendChild(div);
           });
         }
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error('Error fetching progress:', e);
+      }
     }
 
     // Weekly test: load and submit
     async function loadWeeklyTest() {
-      if (!isAuthed()) { alert('Please login first'); return; }
       const exam = document.getElementById('testExamSelect').value;
       try {
-        const res = await fetch(API + '/api/tests/weekly?exam=' + encodeURIComponent(exam), { headers: authHeader() });
+        const res = await fetch(API + '/api/tests/weekly?exam=' + encodeURIComponent(exam));
         const j = await res.json();
-        if (!j.test) { document.getElementById('testContainer').innerHTML = '<em>No test available yet for this exam.</em>'; return; }
+        if (!j.test) { 
+          document.getElementById('testContainer').innerHTML = '<em>No test available yet for this exam.</em>'; 
+          return; 
+        }
         renderTest(j.test);
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error('Error loading test:', e);
+        document.getElementById('testContainer').innerHTML = '<em>Error loading test. Please try again later.</em>';
+      }
     }
 
     function renderTest(test) {
@@ -427,9 +364,110 @@
       } catch (e) { console.error(e); }
     }
 
+    // Dark Mode Toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
+    }
+
+    function updateThemeIcon(theme) {
+      const icon = document.getElementById('themeIcon');
+      if (icon) {
+        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+      }
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
     // Initialize auth state when page loads
     renderAuthState();
     if (isAuthed()) { document.getElementById('dashboard').style.display='block'; fetchAndShowProgress(); }
+
+    // UiPath automation integration
+    async function generateReport() {
+      const btn = document.getElementById('generateReportBtn');
+      const originalText = btn.innerHTML;
+      try {
+        btn.innerHTML = 'Generating... <i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+        
+        const response = await fetch(API + '/api/uipath/generate-report', {
+          method: 'POST',
+          headers: Object.assign({'Content-Type': 'application/json'}, authHeader())
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showToast('Report generation started! We\'ll notify you when it\'s ready.');
+        } else {
+          throw new Error(data.error || 'Failed to start report generation');
+        }
+      } catch (error) {
+        showToast('Error: ' + error.message, 'error');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Toast notification helper
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }, 100);
+    }
   </script>
+
+  <style>
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    
+    .toast.toast-error {
+      background: #f44336;
+    }
+
+    #generateReportBtn {
+      margin-left: 8px;
+      background: #4CAF50;
+    }
+
+    #generateReportBtn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  </style>
 </body>
 </html>
